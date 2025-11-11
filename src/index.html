@@ -1,32 +1,3547 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <link rel="stylesheet" href="styles.css" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>PakePlus App</title>
-        <script type="module" src="/main.js" defer></script>
-    </head>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的日记 - 智能日记本</title>
+    <script src="filesaver.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #5d7fe0;
+            --primary-light: #7b95f1;
+            --primary-dark: #4a6fcf;
+            --secondary-color: #8a9ef5;
+            --accent-color: #ff7e5f;
+            --accent-light: #ff967a;
+            --accent-dark: #ff6b4a;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --sidebar-bg: #2c3e50;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+            --transition-fast: all 0.2s ease;
+            --underline-offset: 4px;
+            --underline-style: solid;
+            --underline-thickness: 1.5px;
+            --underline-color: #333333;
+            --current-font-family: 'Arial', sans-serif;
+            --line-height: 1.6;
+            --line-height-px: 25.6px;
+        }
 
-    <body>
-        <main class="container">
-            <h1>Welcome to PakePlus</h1>
-            <form class="row" id="greet-form">
-                <input id="inputValue" placeholder="Enter a something..." />
-            </form>
-            <div class="resultBox">
-                <span>result: </span>
-                <span id="result"></span>
+        /* 暗色主题 */
+        .theme-dark {
+            --primary-color: #6c8ae8;
+            --primary-light: #8aa4ff;
+            --primary-dark: #5a7ad6;
+            --secondary-color: #7d93e8;
+            --accent-color: #ff8a6c;
+            --accent-light: #ffa38a;
+            --accent-dark: #ff7759;
+            --light-color: #1e1e1e;
+            --dark-color: #f8f9fa;
+            --sidebar-bg: #121212;
+            --card-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --text-light: #a0a0a0;
+            --shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
+            --underline-color: #e0e0e0;
+        }
+
+        /* 护眼主题 */
+        .theme-eye-care {
+            --primary-color: #6a8e6a;
+            --primary-light: #85a885;
+            --primary-dark: #5a7a5a;
+            --secondary-color: #7d9e7d;
+            --accent-color: #d4a56a;
+            --accent-light: #e0b887;
+            --accent-dark: #c8945a;
+            --light-color: #e8f5e8;
+            --dark-color: #2d3e2d;
+            --sidebar-bg: #3a553a;
+            --card-bg: #f5fff5;
+            --text-color: #2d3e2d;
+            --text-light: #5a6e5a;
+            --shadow: 0 6px 15px rgba(106, 142, 106, 0.1);
+            --shadow-lg: 0 10px 25px rgba(106, 142, 106, 0.15);
+            --underline-color: #5a7a5a;
+        }
+
+        /* 信纸主题 */
+        .theme-paper {
+            --primary-color: #8b7355;
+            --primary-light: #a58c6c;
+            --primary-dark: #7a6245;
+            --secondary-color: #9c8465;
+            --accent-color: #b88c5d;
+            --accent-light: #c9a178;
+            --accent-dark: #a77a4e;
+            --light-color: #f5f0e6;
+            --dark-color: #5d4c3a;
+            --sidebar-bg: #6b5d4d;
+            --card-bg: #fefcf5;
+            --text-color: #5d4c3a;
+            --text-light: #7a6a58;
+            --shadow: 0 6px 15px rgba(139, 115, 85, 0.1);
+            --shadow-lg: 0 10px 25px rgba(139, 115, 85, 0.15);
+            --underline-color: #8b7355;
+        }
+
+        /* 可爱粉主题 */
+        .theme-cute-pink {
+            --primary-color: #ffa8c8;
+            --primary-light: #ffc2db;
+            --primary-dark: #ff8db3;
+            --secondary-color: #ffb6d9;
+            --accent-color: #ffa3d6;
+            --accent-light: #ffbde0;
+            --accent-dark: #ff89cc;
+            --light-color: #fff9fb;
+            --dark-color: #b87a9d;
+            --sidebar-bg: #e673a5;
+            --card-bg: #fffdfe;
+            --text-color: #8a446c;
+            --text-light: #b87a9d;
+            --shadow: 0 6px 15px rgba(255, 168, 200, 0.15);
+            --shadow-lg: 0 10px 25px rgba(255, 168, 200, 0.2);
+            --underline-color: #ffa8c8;
+        }
+
+        /* 浪漫紫主题 */
+        .theme-romantic-purple {
+            --primary-color: #9b59b6;
+            --primary-light: #b07cc6;
+            --primary-dark: #8e44ad;
+            --secondary-color: #a66bbe;
+            --accent-color: #e856c9;
+            --accent-light: #f076d0;
+            --accent-dark: #d836b9;
+            --light-color: #f9f0ff;
+            --dark-color: #4a235a;
+            --sidebar-bg: #4a235a;
+            --card-bg: #ffffff;
+            --text-color: #4a235a;
+            --text-light: #7d3c98;
+            --shadow: 0 6px 15px rgba(155, 89, 182, 0.1);
+            --shadow-lg: 0 10px 25px rgba(155, 89, 182, 0.15);
+            --underline-color: #9b59b6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* 全局下划线样式设置 */
+        u, .underline {
+            text-underline-offset: var(--underline-offset);
+            text-decoration-thickness: var(--underline-thickness);
+            text-decoration-style: var(--underline-style);
+            text-decoration-color: var(--underline-color);
+        }
+        
+        /* 全局下划线背景模式 */
+        .editor-container.global-underline #diary-editor {
+            background-image: repeating-linear-gradient(
+                to bottom,
+                transparent,
+                transparent calc(var(--line-height-px) - var(--underline-thickness)),
+                var(--underline-color) calc(var(--line-height-px) - var(--underline-thickness)),
+                var(--underline-color) var(--line-height-px)
+            );
+            background-size: 100% var(--line-height-px);
+            background-position: 0 var(--underline-offset);
+            background-attachment: local;
+            background-repeat: repeat-y;
+            min-height: 100%;
+        }
+        
+        /* 首行缩进2字符样式 */
+        .editor-container.first-line-indent #diary-editor {
+            text-indent: 2em;
+        }
+        
+        .editor-container.first-line-indent #diary-editor p,
+        .editor-container.first-line-indent #diary-editor div {
+            text-indent: 2em;
+        }
+        
+        /* 确保新输入的文本也能应用首行缩进 */
+        .editor-container.first-line-indent #diary-editor br + * {
+            text-indent: 2em;
+        }
+        
+        body {
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--light-color) 0%, var(--light-color) 100%);
+            color: var(--text-color);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            height: 100%;
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+        
+        /* 左侧边栏样式 */
+        .sidebar {
+            width: 320px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            transition: var(--transition);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo span {
+            font-size: 32px;
+        }
+        
+        /* 搜索区域样式 */
+        .search-section {
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .search-box::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            position: relative;
+            z-index: 20;
+        }
+        
+        .btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-dark);
+        }
+        
+        .diary-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .diary-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 18px;
+            margin-bottom: 12px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            border-left: 3px solid transparent;
+            z-index: 20;
+        }
+        
+        .diary-item:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+        
+        .diary-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .diary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .diary-date {
+            font-size: 15px;
+            opacity: 0.9;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+        
+        .diary-date:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .diary-date-input {
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: 100%;
+        }
+        
+        .diary-weather {
+            font-size: 18px;
+        }
+        
+        .diary-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+        
+        .tag {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 30;
+        }
+        
+        .diary-item:hover .delete-btn {
+            opacity: 1;
+        }
+        
+        /* 主编辑区样式 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--card-bg);
+            overflow: hidden;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            transition: var(--transition);
+        }
+        
+        /* 工具栏样式 */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+            transition: var(--transition);
+            align-items: center;
+        }
+        
+        .tool-group {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            padding: 6px 10px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+        
+        select, button, input {
+            padding: 6px 10px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            background-color: var(--card-bg);
+            transition: var(--transition);
+            font-size: 13px;
+            color: var(--text-color);
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(93, 127, 224, 0.2);
+        }
+        
+        button {
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+        
+        .tool-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .tool-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .editor-container {
+            flex: 1;
+            padding: 10px 30px 30px;
+            overflow-y: hidden;
+            background-color: var(--card-bg);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+        
+        #diary-editor {
+            width: 100%;
+            flex: 1;
+            border: none;
+            outline: none;
+            resize: none;
+            font-size: 16px;
+            line-height: var(--line-height);
+            background: transparent;
+            font-family: var(--current-font-family);
+            min-height: 100%;
+            padding-bottom: 20px;
+            color: var(--text-color);
+            transition: var(--transition);
+            overflow-y: auto;
+        }
+        
+        #diary-editor p,
+        #diary-editor b,
+        #diary-editor i,
+        #diary-editor u {
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+            line-height: inherit;
+        }
+        
+        /* 移除编辑区域的字数统计 */
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 8px;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+        
+        .tag-container .tag {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .tag-container .tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .tag-container .tag.selected {
+            box-shadow: 0 0 0 3px rgba(93, 127, 224, 0.5), 0 4px 8px rgba(0, 0, 0, 0.15);
+            transform: scale(1.05);
+        }
+        
+        .tag-container .tag .remove-tag {
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 8px;
+            opacity: 0.7;
+            background: rgba(255, 255, 255, 0.3);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tag-container .tag .remove-tag:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* 标签设置工具组 */
+        .tag-settings-group {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            padding: 6px 10px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            position: relative;
+            max-width: 200px;
+        }
+        
+        .tag-controls {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .tag-controls input {
+            width: 100px;
+            flex: 1;
+        }
+        
+        .tag-controls #add-tag {
+            padding: 4px 8px;
+            height: 28px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+        }
+        
+        .tag-settings-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 5px;
+            background-color: var(--card-bg);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            z-index: 101;
+            box-shadow: var(--shadow);
+            width: 200px;
+        }
+        
+        .tag-settings-dropdown.active {
+            display: block;
+        }
+        
+        .tag-settings-section {
+            margin-bottom: 12px;
+        }
+        
+        .tag-settings-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .tag-settings-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 6px;
+            display: block;
+        }
+        
+        .tag-color-preview {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            display: inline-block;
+            vertical-align: middle;
+            transition: var(--transition);
+        }
+        
+        .tag-color-picker {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+            margin-top: 8px;
+        }
+        
+        .tag-color-option {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .tag-color-option:hover {
+            transform: scale(1.2);
+        }
+        
+        .tag-size-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tag-size-slider {
+            flex: 1;
+        }
+        
+        .tag-size-value {
+            font-size: 12px;
+            color: var(--text-light);
+            min-width: 30px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        /* 颜色选择面板样式 */
+        .color-picker {
+            display: none;
+            position: absolute;
+            background-color: var(--card-bg);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            z-index: 100;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+        
+        .color-option {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .color-option:hover {
+            transform: scale(1.2);
+        }
+        
+        .emoji-picker {
+            display: none;
+            position: absolute;
+            background-color: var(--card-bg);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            max-width: 320px;
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: var(--shadow);
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            transition: var(--transition);
+        }
+        
+        .emoji-option {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 24px;
+            border-radius: 8px;
+            transition: var(--transition);
+            background: rgba(0, 0, 0, 0.05);
+        }
+        
+        .emoji-option:hover {
+            background-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+        
+        .weather-picker {
+            display: none;
+            position: absolute;
+            background-color: var(--card-bg);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            z-index: 100;
+            box-shadow: var(--shadow);
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            transition: var(--transition);
+        }
+        
+        .weather-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            border-radius: 8px;
+            transition: var(--transition);
+            gap: 5px;
+            color: var(--text-color);
+        }
+        
+        .weather-option:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .weather-text {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .export-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .export-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .export-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .export-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            cursor: pointer;
+            z-index: 20;
+        }
+        
+        .export-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .settings-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .settings-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            width: 100%;
+            justify-content: flex-start;
+            cursor: pointer;
+            z-index: 20;
+        }
+        
+        .settings-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+        
+        /* 设置模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+        
+        .modal.active {
+            display: flex;
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px);
+            transition: var(--transition);
+            max-height: 80vh;
+            overflow-y: auto;
+            color: var(--text-color);
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-title span {
+            font-size: 24px;
+        }
+        
+        /* 设置项样式 */
+        .settings-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .setting-card {
+            background-color: var(--light-color);
+            border-radius: var(--border-radius-sm);
+            padding: 15px;
+            transition: var(--transition);
+        }
+        
+        .setting-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+        }
+        
+        .setting-item:not(:last-child) {
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+        
+        .setting-label {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-color);
+        }
+        
+        .setting-label span {
+            font-size: 18px;
+        }
+        
+        .setting-description {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 4px;
+            margin-left: 28px;
+        }
+        
+        /* 主题选择器样式 */
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        .theme-option {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            text-align: center;
+            background-color: var(--light-color);
+        }
+        
+        .theme-option:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        
+        .theme-option.active {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(93, 127, 224, 0.2);
+        }
+        
+        .theme-preview {
+            width: 100%;
+            height: 60px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .theme-sidebar {
+            width: 30%;
+            background-color: var(--sidebar-bg);
+        }
+        
+        .theme-main {
+            flex: 1;
+            background-color: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .theme-toolbar {
+            height: 20%;
+            background-color: var(--light-color);
+        }
+        
+        .theme-editor {
+            flex: 1;
+            background-color: var(--card-bg);
+        }
+        
+        .theme-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        /* 备份和恢复按钮样式 */
+        .backup-restore-btn {
+            padding: 8px 16px;
+            min-width: 120px;
+            white-space: nowrap;
+            cursor: pointer;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: center;
+            font-size: 13px;
+        }
+        
+        .backup-restore-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(93, 127, 224, 0.2);
+        }
+        
+        .backup-restore-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* 开关按钮样式 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 54px;
+            height: 28px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e0e0e0;
+            transition: var(--transition-fast);
+            border-radius: 28px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: var(--transition-fast);
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        input:checked + .slider {
+            background-color: var(--accent-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* 模态框底部按钮区域 */
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-btn {
+            padding: 8px 16px;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+        
+        .modal-btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .modal-btn-primary:hover {
+            background-color: var(--primary-dark);
+            box-shadow: 0 4px 10px rgba(93, 127, 224, 0.2);
+        }
+        
+        .modal-btn-secondary {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-btn-secondary:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        /* 减小字体选择器长度 */
+        .font-picker {
+            width: 120px;
+        }
+        
+        /* 下划线工具样式 */
+        .underline-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .underline-offset {
+            width: 60px;
+        }
+        
+        /* 工具栏字数统计样式 */
+        .toolbar-word-count {
+            font-size: 13px;
+            color: var(--text-light);
+            padding: 6px 10px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 0;
+        }
+        
+        /* 背景设置选择器 */
+        .background-select {
+            width: 100px;
+        }
+        
+        /* 全屏浏览模式样式 */
+        .fullscreen-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--card-bg);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-y: auto;
+            transition: var(--transition);
+        }
+        
+        .fullscreen-view.active {
+            display: flex;
+        }
+        
+        .fullscreen-header {
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 20px;
+        }
+        
+        .fullscreen-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+        
+        .fullscreen-meta {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 16px;
+            color: var(--text-light);
+        }
+        
+        .fullscreen-weather {
+            font-size: 20px;
+        }
+        
+        .fullscreen-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .fullscreen-tag {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .fullscreen-content {
+            width: 100%;
+            max-width: 900px;
+            font-family: var(--current-font-family);
+            font-size: 18px;
+            line-height: var(--line-height);
+            color: var(--text-color);
+            background-color: var(--card-bg);
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: visible;
+        }
+        
+        .fullscreen-content p,
+        .fullscreen-content b,
+        .fullscreen-content i,
+        .fullscreen-content u {
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+            line-height: inherit;
+        }
+        
+        .fullscreen-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 10px 0;
+        }
+        
+        .fullscreen-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .fullscreen-view.active .fullscreen-hint {
+            opacity: 1;
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 250px;
+            }
+            
+            .diary-list {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 15px;
+            }
+            
+            .diary-item {
+                min-width: 220px;
+                margin-right: 15px;
+                margin-bottom: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .toolbar {
+                gap: 10px;
+                padding: 12px;
+            }
+            
+            .tool-group {
+                padding: 5px 8px;
+            }
+            
+            .editor-container {
+                padding: 20px;
+            }
+            
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .backup-restore-btn {
+                width: 100%;
+                margin-top: 5px;
+            }
+            
+            .setting-description {
+                margin-left: 0;
+                margin-top: 6px;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+            }
+            
+            .modal-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .underline-controls {
+                flex-wrap: wrap;
+            }
+            
+            .tag-settings-group {
+                max-width: 200px;
+            }
+            
+            .theme-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .theme-option {
+                min-width: auto;
+            }
+            
+            .fullscreen-view {
+                padding: 20px 15px;
+            }
+            
+            .fullscreen-content {
+                font-size: 16px;
+            }
+            
+            .fullscreen-title {
+                font-size: 24px;
+            }
+            
+            .fullscreen-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .theme-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .tag-settings-group {
+                max-width: 180px;
+            }
+            
+            .tag-controls input {
+                width: 80px;
+            }
+            
+            .fullscreen-title {
+                font-size: 20px;
+            }
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        #diary-editor:empty:before {
+            content: attr(placeholder);
+            color: var(--text-light);
+            font-style: italic;
+        }
+    
+        /* 改进修复：标签设置面板显示完整 */
+        .tag-settings-group {
+            position: relative;
+            z-index: 50;
+        }
+        .tag-settings-dropdown {
+            position: absolute;
+            display: none;
+            z-index: 3000;
+            max-width: 320px;
+            box-shadow: var(--shadow);
+        }
+
+        /* 保证编辑区与顶部工具栏/标签不重叠 */
+        .editor-container {
+            padding-top: 10px;
+        }
+
+        /* 兼容小屏：下拉面板不超出屏幕 */
+        .tag-settings-dropdown.moved-to-body {
+            position: absolute !important;
+            max-width: calc(100% - 24px) !important;
+            overflow: auto;
+            max-height: 50vh;
+        }
+    </style>
+</head>
+<body>
+    <!-- 全屏浏览模式 -->
+    <div class="fullscreen-view" id="fullscreen-view">
+        <div class="fullscreen-header">
+            <h1 class="fullscreen-title" id="fullscreen-title">日记标题</h1>
+            <div class="fullscreen-meta">
+                <div class="fullscreen-weather" id="fullscreen-weather"></div>
+                <div class="fullscreen-tags" id="fullscreen-tags"></div>
             </div>
-            <div class="invokeBox">
-                <button id="openUrl">open_url_browser</button>
-                <button id="openUrlNew">open_url_new</button>
-                <button id="runCommand">run_command</button>
-                <button id="downloadFile">download_file</button>
-                <button id="getExeDir">get_exe_dir</button>
-                <button id="getEnvVar">get_env_var</button>
-                <button id="findPort">find_port</button>
+        </div>
+        <div class="fullscreen-content" id="fullscreen-content">
+            <!-- 日记内容将在这里显示 -->
+        </div>
+        <div class="fullscreen-hint">点击任意位置返回编辑模式</div>
+    </div>
+
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <span>⚙️</span> 设置
+                </h2>
             </div>
-        </main>
-    </body>
+            
+            <div class="settings-content">
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">
+                                <span>🎨</span> 主题设置
+                            </div>
+                            <div class="setting-description">
+                                选择您喜欢的界面主题
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="theme-selector">
+                        <div class="theme-option active" data-theme="default">
+                            <div class="theme-preview">
+                                <div class="theme-sidebar" style="background-color: #2c3e50;"></div>
+                                <div class="theme-main">
+                                    <div class="theme-toolbar" style="background-color: #f8f9fa;"></div>
+                                    <div class="theme-editor" style="background-color: #ffffff;"></div>
+                                </div>
+                            </div>
+                            <div class="theme-name">默认</div>
+                        </div>
+                        
+                        <div class="theme-option" data-theme="dark">
+                            <div class="theme-preview">
+                                <div class="theme-sidebar" style="background-color: #121212;"></div>
+                                <div class="theme-main">
+                                    <div class="theme-toolbar" style="background-color: #1e1e1e;"></div>
+                                    <div class="theme-editor" style="background-color: #2d2d2d;"></div>
+                                </div>
+                            </div>
+                            <div class="theme-name">暗色</div>
+                        </div>
+                        
+                        <div class="theme-option" data-theme="eye-care">
+                            <div class="theme-preview">
+                                <div class="theme-sidebar" style="background-color: #3a553a;"></div>
+                                <div class="theme-main">
+                                    <div class="theme-toolbar" style="background-color: #e8f5e8;"></div>
+                                    <div class="theme-editor" style="background-color: #f5fff5;"></div>
+                                </div>
+                            </div>
+                            <div class="theme-name">护眼</div>
+                        </div>
+                        
+                        <div class="theme-option" data-theme="paper">
+                            <div class="theme-preview">
+                                <div class="theme-sidebar" style="background-color: #6b5d4d;"></div>
+                                <div class="theme-main">
+                                    <div class="theme-toolbar" style="background-color: #f5f0e6;"></div>
+                                    <div class="theme-editor" style="background-color: #fefcf5;"></div>
+                                </div>
+                            </div>
+                            <div class="theme-name">信纸</div>
+                        </div>
+                        
+                        <div class="theme-option" data-theme="cute-pink">
+                            <div class="theme-preview">
+                                <div class="theme-sidebar" style="background-color: #e673a5;"></div>
+                                <div class="theme-main">
+                                    <div class="theme-toolbar" style="background-color: #fff9fb;"></div>
+                                    <div class="theme-editor" style="background-color: #fffdfe;"></div>
+                                </div>
+                            </div>
+                            <div class="theme-name">可爱粉</div>
+                        </div>
+                        
+                        <div class="theme-option" data-theme="romantic-purple">
+                            <div class="theme-preview">
+                                <div class="theme-sidebar" style="background-color: #4a235a;"></div>
+                                <div class="theme-main">
+                                    <div class="theme-toolbar" style="background-color: #f9f0ff;"></div>
+                                    <div class="theme-editor" style="background-color: #ffffff;"></div>
+                                </div>
+                            </div>
+                            <div class="theme-name">浪漫紫</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">
+                                <span>⏱️</span> 自动保存
+                            </div>
+                            <div class="setting-description">
+                                开启后将自动保存您的日记内容，避免意外丢失
+                            </div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="auto-save-toggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="setting-card">
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">
+                                <span>💾</span> 数据备份
+                            </div>
+                            <div class="setting-description">
+                                将您的所有日记数据导出为备份文件
+                            </div>
+                        </div>
+                        <button class="backup-restore-btn" id="backup-data">
+                            <span>📤</span> 备份
+                        </button>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">
+                                <span>📥</span> 恢复备份
+                            </div>
+                            <div class="setting-description">
+                                从之前创建的备份文件中恢复日记数据
+                            </div>
+                        </div>
+                        <button class="backup-restore-btn" id="restore-data">
+                            <span>🔄</span> 恢复
+                        </button>
+                        <input type="file" id="backup-file" accept=".json" style="display: none;">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" id="close-settings">
+                    <span>✕</span> 关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <span>📖</span> 我的日记
+            </div>
+            
+            <div class="search-section">
+                <input type="text" class="search-box" id="search-input" placeholder="搜索日记...">
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="new-diary">
+                    <span>+</span> 新建日记
+                </button>
+                <button class="btn" id="save-diary">
+                    <span>💾</span> 保存日记
+                </button>
+            </div>
+            
+            <div class="diary-list" id="diary-list">
+                </div>
+            
+            <div class="export-section">
+                <div class="export-title">
+                    <span>📤</span> 导出日记
+                </div>
+                <div class="export-buttons">
+                    <button class="export-btn" id="export-word">
+                        <span>📝</span> 导出为Word
+                    </button>
+                    <button class="export-btn" id="export-txt">
+                        <span>📃</span> 导出为TXT
+                    </button>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <button class="settings-btn" id="settings-btn">
+                    <span>⚙️</span> 设置
+                </button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="toolbar">
+                <div class="tool-group">
+                    <select id="font-family" class="font-picker">
+                        <option value="Arial, sans-serif">默认字体</option>
+                        <option value="'SimSun', serif">宋体</option>
+                        <option value="'Microsoft YaHei', sans-serif">微软雅黑</option>
+                        <option value="'KaiTi', serif">楷体</option>
+                        <option value="'SimHei', sans-serif">黑体</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                    </select>
+                    
+                    <select id="font-size">
+                        <option value="10px">10号</option>
+                        <option value="12px">12号</option>
+                        <option value="14px">14号</option>
+                        <option value="16px" selected>16号</option>
+                        <option value="18px">18号</option>
+                        <option value="20px">20号</option>
+                        <option value="22px">22号</option>
+                        <option value="24px">24号</option>
+                        <option value="26px">26号</option>
+                        <option value="28px">28号</option>
+                        <option value="30px">30号</option>
+                        <option value="32px">32px</option>
+                        <option value="34px">34px</option>
+                        <option value="36px">36px</option>
+                    </select>
+                    
+                    <select id="line-height">
+                        <option value="1.2">紧凑</option>
+                        <option value="1.5" selected>正常</option>
+                        <option value="1.8">宽松</option>
+                        <option value="2.2">很宽松</option>
+                    </select>
+                </div>
+                
+                <div class="tool-group">
+                    <button class="tool-btn" id="bold-btn" title="加粗">B</button>
+                    <button class="tool-btn" id="italic-btn" title="斜体">I</button>
+                    <button class="tool-btn" id="underline-btn" title="下划线">U</button>
+                    <button class="tool-btn" id="global-underline-btn" title="全局下划线">U+</button>
+                </div>
+                
+                <div class="tool-group">
+                    <button class="tool-btn" id="text-color-btn" title="文字颜色">A<span style="color: red;">▼</span></button>
+                    <div class="color-picker" id="text-color-picker"></div>
+                    
+                    <button class="tool-btn" id="underline-color-btn" title="下划线颜色">U<span style="color: blue;">▼</span></button>
+                    <div class="color-picker" id="underline-color-picker"></div>
+                </div>
+                
+                <div class="tool-group">
+                    <div class="underline-controls">
+                        <input type="number" id="underline-offset" class="underline-offset" min="1" max="10" value="4" title="下划线距离">
+                        
+                        <select id="underline-style" title="下划线样式">
+                            <option value="solid">实线</option>
+                            <option value="dashed">虚线</option>
+                            <option value="dotted">点线</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="tool-group">
+                    <button class="tool-btn" id="align-left" title="左对齐">⫷</button>
+                    <button class="tool-btn" id="align-center" title="居中对齐">⫸</button>
+                    <button class="tool-btn" id="align-right" title="右对齐">⫹</button>
+                </div>
+                
+                <div class="tool-group">
+                    <button id="weather-btn">天气 ☀️</button>
+                    <div class="weather-picker" id="weather-picker">
+                        </div>
+                </div>
+                
+                <div class="tool-group">
+                    <button id="emoji-btn">表情 😊</button>
+                    <div class="emoji-picker" id="emoji-picker">
+                        </div>
+                </div>
+                
+                <div class="tool-group">
+                    <button class="tool-btn" id="insert-image" title="插入图片">🖼️</button>
+                    <input type="file" id="image-input" accept="image/*" style="display: none;">
+                </div>
+                
+                <div class="tool-group">
+                    <select id="background-select" class="background-select">
+                        <option value="#ffffff">默认背景</option>
+                        <option value="#f8f9fa">浅灰</option>
+                        <option value="#fff9e6">浅黄</option>
+                        <option value="#e6f7ff">浅蓝</option>
+                        <option value="#f0e6ff">浅紫</option>
+                    </select>
+                </div>
+                
+                <!-- 标签设置 -->
+                <div class="tag-settings-group">
+                    <div class="tag-controls">
+                        <input type="text" id="tag-input" placeholder="标签">
+                        <button id="add-tag">+</button> <button class="tool-btn" id="tag-settings-toggle" title="标签设置">⚙️</button>
+                    </div>
+                    <div class="tag-settings-dropdown" id="tag-settings-dropdown">
+                        <div class="tag-settings-section">
+                            <label class="tag-settings-label">标签颜色</label>
+                            <div class="tag-color-preview" id="tag-color-preview" title="标签颜色"></div>
+                            <div class="tag-color-picker" id="tag-color-picker"></div>
+                        </div>
+                        <div class="tag-settings-section">
+                            <label class="tag-settings-label">标签大小</label>
+                            <div class="tag-size-controls">
+                                <input type="range" id="tag-size-slider" class="tag-size-slider" min="10" max="24" value="16" title="标签字体大小">
+                                <span class="tag-size-value" id="tag-size-value">16px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 缩进工具组 -->
+                <div class="tool-group">
+                    <button class="tool-btn" id="indent-first-line" title="首行缩进">↪</button>
+                    <button class="tool-btn" id="indent-increase" title="增加缩进">↳</button>
+                    <button class="tool-btn" id="indent-decrease" title="减小缩进">↲</button>
+                </div>
+                
+                <!-- 字数统计 -->
+                <div class="toolbar-word-count" id="toolbar-word-count">
+                    <span>📝</span> 字数: <span id="word-count-number">0</span>
+                </div>
+                
+                <!-- 全屏浏览按钮 -->
+                <button class="tool-btn" id="fullscreen-view-btn" title="全屏浏览">👁️</button>
+            </div>
+            
+            <div class="editor-container" id="editor-container">
+                <div class="tag-container" id="tag-container"></div>
+                <div contenteditable="true" id="diary-editor" placeholder="开始写下今天的日记..."></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化变量
+        let diaries = JSON.parse(localStorage.getItem('diaries')) || [];
+        let currentDiaryId = null;
+        let currentWeather = '';
+        let currentTags = [];
+        let autoSaveEnabled = true;
+        let currentTextColor = '#333333';
+        let currentUnderlineColor = '#333333';
+        let globalUnderlineEnabled = false;
+        let currentTagColor = '#5d7fe0';
+        let currentTagSize = 16;
+        let selectedTags = [];
+        let currentTheme = 'default';
+        let firstLineIndentEnabled = false;
+        
+        // 常用颜色列表
+        const colors = [
+            '#000000', '#ff0000', '#008000', '#0000ff', '#ffff00', '#800080',
+            '#ffa500', '#a52a2a', '#808080', '#ffc0cb', '#00ffff', '#00008b'
+        ];
+        
+        // 标签颜色选项
+        const tagColors = [
+            '#5d7fe0', '#ff7e5f', '#6bc950', '#e856c9', '#ffbd2e', '#8a9ef5',
+            '#50c8b5', '#c850c8', '#50a0c8', '#c85050', '#7e50c8', '#50c87e'
+        ];
+        
+        // 表情列表
+        const emojis = ['😊', '😂', '🥰', '😍', '🤩', '😎', '😭', '😡', '🤔', '😴', 
+                       '👍', '👎', '❤️', '🔥', '⭐', '🎉', '💯', '🙏', '😇', '🤗',
+                       '😘', '🤪', '😜', '🤓', '🥳', '😢', '🥺', '😤', '🤯', '😱'];
+        
+        // 天气选项
+        const weatherOptions = [
+            { emoji: '☀️', text: '晴' },
+            { emoji: '⛅', text: '多云' },
+            { emoji: '🌧️', text: '雨' },
+            { emoji: '⛈️', text: '雷雨' },
+            { emoji: '❄️', text: '雪' },
+            { emoji: '🌫️', text: '雾' },
+            { emoji: '🌪️', text: '风' },
+            { emoji: '🌈', text: '彩虹' },
+            { emoji: '🌙', text: '晴夜' }
+        ];
+        
+        // DOM 元素
+        let elements = {};
+        
+        // 初始化应用
+        function initApp() {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initialize);
+            } else {
+                initialize();
+            }
+        }
+        
+        // 初始化函数
+        function initialize() {
+            getDOMElements();
+            bindSidebarEvents();
+            renderDiaryList();
+            populateEmojiPicker();
+            populateWeatherPicker();
+            populateColorPickers();
+            populateTagColorPicker();
+            
+            const savedAutoSave = localStorage.getItem('autoSaveEnabled');
+            if (savedAutoSave !== null) {
+                autoSaveEnabled = savedAutoSave === 'true';
+                elements.autoSaveToggle.checked = autoSaveEnabled;
+            }
+            
+            const savedGlobalUnderline = localStorage.getItem('globalUnderlineEnabled');
+            if (savedGlobalUnderline !== null) {
+                globalUnderlineEnabled = savedGlobalUnderline === 'true';
+                // 移除默认激活状态，只在点击时短暂激活
+                elements.globalUnderlineBtn.classList.remove('active');
+                elements.editorContainer.classList.toggle('global-underline', globalUnderlineEnabled);
+            }
+            
+            const savedTagColor = localStorage.getItem('tagColor');
+            if (savedTagColor) {
+                currentTagColor = savedTagColor;
+                elements.tagColorPreview.style.backgroundColor = currentTagColor;
+            }
+            
+            const savedTagSize = localStorage.getItem('tagSize');
+            if (savedTagSize) {
+                currentTagSize = parseInt(savedTagSize);
+                elements.tagSizeSlider.value = currentTagSize;
+                elements.tagSizeValue.textContent = `${currentTagSize}px`;
+            }
+            
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                currentTheme = savedTheme;
+                applyTheme(currentTheme);
+            }
+            
+            const savedFirstLineIndent = localStorage.getItem('firstLineIndentEnabled');
+            if (savedFirstLineIndent !== null) {
+                firstLineIndentEnabled = savedFirstLineIndent === 'true';
+                elements.indentFirstLineBtn.classList.toggle('active', firstLineIndentEnabled);
+                elements.editorContainer.classList.toggle('first-line-indent', firstLineIndentEnabled);
+            }
+            
+            updateLineHeightPixelValue();
+            
+            if (diaries.length > 0) {
+                loadDiary(diaries[0].id);
+            } else {
+                createNewDiary();
+            }
+            
+            bindOtherEvents();
+        }
+        
+        // 获取DOM元素
+        function getDOMElements() {
+            elements = {
+                sidebar: document.getElementById('sidebar'),
+                diaryList: document.getElementById('diary-list'),
+                diaryEditor: document.getElementById('diary-editor'),
+                newDiaryBtn: document.getElementById('new-diary'),
+                saveDiaryBtn: document.getElementById('save-diary'),
+                fontFamily: document.getElementById('font-family'),
+                fontSize: document.getElementById('font-size'),
+                lineHeight: document.getElementById('line-height'),
+                boldBtn: document.getElementById('bold-btn'),
+                italicBtn: document.getElementById('italic-btn'),
+                underlineBtn: document.getElementById('underline-btn'),
+                globalUnderlineBtn: document.getElementById('global-underline-btn'),
+                underlineOffset: document.getElementById('underline-offset'),
+                underlineStyle: document.getElementById('underline-style'),
+                editorContainer: document.getElementById('editor-container'),
+                alignLeftBtn: document.getElementById('align-left'),
+                alignCenterBtn: document.getElementById('align-center'),
+                alignRightBtn: document.getElementById('align-right'),
+                indentFirstLineBtn: document.getElementById('indent-first-line'),
+                indentIncreaseBtn: document.getElementById('indent-increase'),
+                indentDecreaseBtn: document.getElementById('indent-decrease'),
+                insertImageBtn: document.getElementById('insert-image'),
+                imageInput: document.getElementById('image-input'),
+                backgroundSelect: document.getElementById('background-select'),
+                weatherBtn: document.getElementById('weather-btn'),
+                weatherPicker: document.getElementById('weather-picker'),
+                emojiBtn: document.getElementById('emoji-btn'),
+                emojiPicker: document.getElementById('emoji-picker'),
+                tagInput: document.getElementById('tag-input'),
+                addTagBtn: document.getElementById('add-tag'),
+                tagContainer: document.getElementById('tag-container'),
+                exportWordBtn: document.getElementById('export-word'),
+                exportTxtBtn: document.getElementById('export-txt'),
+                wordCountElement: document.getElementById('word-count-number'),
+                searchInput: document.getElementById('search-input'),
+                settingsBtn: document.getElementById('settings-btn'),
+                settingsModal: document.getElementById('settings-modal'),
+                autoSaveToggle: document.getElementById('auto-save-toggle'),
+                backupDataBtn: document.getElementById('backup-data'),
+                restoreDataBtn: document.getElementById('restore-data'),
+                backupFileInput: document.getElementById('backup-file'),
+                closeSettingsBtn: document.getElementById('close-settings'),
+                textColorBtn: document.getElementById('text-color-btn'),
+                textColorPicker: document.getElementById('text-color-picker'),
+                underlineColorBtn: document.getElementById('underline-color-btn'),
+                underlineColorPicker: document.getElementById('underline-color-picker'),
+                tagColorPreview: document.getElementById('tag-color-preview'),
+                tagColorPicker: document.getElementById('tag-color-picker'),
+                tagSizeSlider: document.getElementById('tag-size-slider'),
+                tagSizeValue: document.getElementById('tag-size-value'),
+                themeOptions: document.querySelectorAll('.theme-option'),
+                tagSettingsToggle: document.getElementById('tag-settings-toggle'),
+                tagSettingsDropdown: document.getElementById('tag-settings-dropdown'),
+                // 新添加的全屏浏览元素
+                fullscreenViewBtn: document.getElementById('fullscreen-view-btn'),
+                fullscreenView: document.getElementById('fullscreen-view'),
+                fullscreenTitle: document.getElementById('fullscreen-title'),
+                fullscreenWeather: document.getElementById('fullscreen-weather'),
+                fullscreenTags: document.getElementById('fullscreen-tags'),
+                fullscreenContent: document.getElementById('fullscreen-content')
+            };
+        }
+        
+        // 应用主题
+        function applyTheme(theme) {
+            document.body.classList.remove('theme-dark', 'theme-eye-care', 'theme-paper', 'theme-cute-pink', 'theme-romantic-purple');
+            
+            if (theme !== 'default') {
+                document.body.classList.add(`theme-${theme}`);
+            }
+            
+            elements.themeOptions.forEach(option => {
+                option.classList.remove('active');
+                if (option.dataset.theme === theme) {
+                    option.classList.add('active');
+                }
+            });
+            
+            localStorage.setItem('theme', theme);
+            currentTheme = theme;
+        }
+        
+        // 更新行高像素值
+        function updateLineHeightPixelValue() {
+            const fontSize = parseInt(elements.fontSize.value);
+            const lineHeight = parseFloat(elements.lineHeight.value);
+            const lineHeightPx = fontSize * lineHeight;
+            document.documentElement.style.setProperty('--line-height-px', `${lineHeightPx}px`);
+        }
+        
+        // 填充颜色选择器
+        function populateColorPickers() {
+            elements.textColorPicker.innerHTML = '';
+            colors.forEach(color => {
+                const colorElement = document.createElement('div');
+                colorElement.className = 'color-option';
+                colorElement.style.backgroundColor = color;
+                colorElement.title = color;
+                colorElement.addEventListener('click', () => {
+                    applyTextColor(color);
+                    elements.textColorPicker.style.display = 'none';
+                });
+                elements.textColorPicker.appendChild(colorElement);
+            });
+            
+            elements.underlineColorPicker.innerHTML = '';
+            colors.forEach(color => {
+                const colorElement = document.createElement('div');
+                colorElement.className = 'color-option';
+                colorElement.style.backgroundColor = color;
+                colorElement.title = color;
+                colorElement.addEventListener('click', () => {
+                    applyUnderlineColor(color);
+                    elements.underlineColorPicker.style.display = 'none';
+                });
+                elements.underlineColorPicker.appendChild(colorElement);
+            });
+        }
+        
+        // 填充标签颜色选择器
+        function populateTagColorPicker() {
+            elements.tagColorPicker.innerHTML = '';
+            tagColors.forEach(color => {
+                const colorElement = document.createElement('div');
+                colorElement.className = 'tag-color-option';
+                colorElement.style.backgroundColor = color;
+                colorElement.title = color;
+                colorElement.addEventListener('click', () => {
+                    currentTagColor = color;
+                    elements.tagColorPreview.style.backgroundColor = color;
+                    elements.tagColorPicker.style.display = 'none';
+                    localStorage.setItem('tagColor', color);
+                    
+                    updateSelectedTags();
+                });
+                elements.tagColorPicker.appendChild(colorElement);
+            });
+            
+            elements.tagColorPreview.style.backgroundColor = currentTagColor;
+        }
+        
+        // 绑定左侧边栏事件
+        function bindSidebarEvents() {
+            elements.sidebar.addEventListener('click', function(e) {
+                const target = e.target.closest('button, .diary-item, .delete-btn');
+                if (!target) return;
+                
+                if (target.id === 'new-diary' || target.closest('#new-diary')) {
+                    e.preventDefault();
+                    createNewDiary();
+                    return;
+                }
+                
+                if (target.id === 'save-diary' || target.closest('#save-diary')) {
+                    e.preventDefault();
+                    saveCurrentDiary();
+                    return;
+                }
+                
+                if (target.id === 'export-word' || target.closest('#export-word')) {
+                    e.preventDefault();
+                    exportToWord();
+                    return;
+                }
+                
+                if (target.id === 'export-txt' || target.closest('#export-txt')) {
+                    e.preventDefault();
+                    exportToTXT();
+                    return;
+                }
+                
+                if (target.id === 'settings-btn' || target.closest('#settings-btn')) {
+                    e.preventDefault();
+                    elements.settingsModal.classList.add('active');
+                    return;
+                }
+                
+                if (target.classList.contains('diary-item') && !target.classList.contains('delete-btn')) {
+                    const diaryId = target.dataset.id;
+                    if (diaryId) {
+                        loadDiary(diaryId);
+                    }
+                    return;
+                }
+                
+                if (target.classList.contains('delete-btn')) {
+                    e.stopPropagation();
+                    const diaryItem = target.closest('.diary-item');
+                    if (diaryItem) {
+                        const diaryId = diaryItem.dataset.id;
+                        deleteDiary(diaryId);
+                    }
+                    return;
+                }
+            });
+            
+            elements.searchInput.addEventListener('input', filterDiaries);
+        }
+        
+        // 绑定其他事件
+        function bindOtherEvents() {
+            // 全屏浏览按钮事件
+            elements.fullscreenViewBtn.addEventListener('click', enterFullscreenView);
+            
+            // 全屏浏览模式点击退出
+            elements.fullscreenView.addEventListener('click', exitFullscreenView);
+            
+            // 阻止全屏内容区域点击事件冒泡
+            elements.fullscreenContent.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+            
+            // 标签设置下拉菜单切换
+            elements.tagSettingsToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                elements.tagSettingsDropdown.classList.toggle('active');
+                
+                // 关闭其他下拉菜单
+                elements.textColorPicker.style.display = 'none';
+                elements.underlineColorPicker.style.display = 'none';
+                elements.emojiPicker.style.display = 'none';
+                elements.weatherPicker.style.display = 'none';
+            });
+            
+            // 点击页面其他地方关闭标签设置下拉菜单
+            document.addEventListener('click', () => {
+                elements.tagSettingsDropdown.classList.remove('active');
+            });
+            
+            // 阻止标签设置下拉菜单内部点击事件冒泡
+            elements.tagSettingsDropdown.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+            
+            elements.themeOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const theme = option.dataset.theme;
+                    applyTheme(theme);
+                });
+            });
+            
+            elements.autoSaveToggle.addEventListener('change', () => {
+                autoSaveEnabled = elements.autoSaveToggle.checked;
+                localStorage.setItem('autoSaveEnabled', autoSaveEnabled);
+                showNotification(autoSaveEnabled ? '自动保存已开启' : '自动保存已关闭');
+            });
+            
+            // 修改：全局下划线按钮只在点击时短暂激活，不保持激活状态
+            elements.globalUnderlineBtn.addEventListener('click', () => {
+                globalUnderlineEnabled = !globalUnderlineEnabled;
+                elements.globalUnderlineBtn.classList.add('active');
+                elements.editorContainer.classList.toggle('global-underline', globalUnderlineEnabled);
+                localStorage.setItem('globalUnderlineEnabled', globalUnderlineEnabled);
+                saveCurrentDiary();
+                
+                // 1秒后取消激活状态
+                setTimeout(() => {
+                    elements.globalUnderlineBtn.classList.remove('active');
+                }, 1000);
+            });
+            
+            // 对齐按钮事件
+            elements.alignLeftBtn.addEventListener('click', () => {
+                document.execCommand('justifyLeft', false, null);
+                elements.alignLeftBtn.classList.add('active');
+                saveCurrentDiary();
+                
+                // 1秒后取消激活状态
+                setTimeout(() => {
+                    elements.alignLeftBtn.classList.remove('active');
+                }, 1000);
+            });
+            
+            elements.alignCenterBtn.addEventListener('click', () => {
+                document.execCommand('justifyCenter', false, null);
+                elements.alignCenterBtn.classList.add('active');
+                saveCurrentDiary();
+                
+                // 1秒后取消激活状态
+                setTimeout(() => {
+                    elements.alignCenterBtn.classList.remove('active');
+                }, 1000);
+            });
+            
+            elements.alignRightBtn.addEventListener('click', () => {
+                document.execCommand('justifyRight', false, null);
+                elements.alignRightBtn.classList.add('active');
+                saveCurrentDiary();
+                
+                // 1秒后取消激活状态
+                setTimeout(() => {
+                    elements.alignRightBtn.classList.remove('active');
+                }, 1000);
+            });
+            
+            elements.backupDataBtn.addEventListener('click', backupData);
+            
+            elements.restoreDataBtn.addEventListener('click', () => {
+                elements.backupFileInput.click();
+            });
+            
+            elements.backupFileInput.addEventListener('change', restoreData);
+            
+            elements.closeSettingsBtn.addEventListener('click', () => {
+                elements.settingsModal.classList.remove('active');
+            });
+            
+            elements.settingsModal.addEventListener('click', (e) => {
+                if (e.target === elements.settingsModal) {
+                    elements.settingsModal.classList.remove('active');
+                }
+            });
+            
+            elements.fontFamily.addEventListener('change', () => {
+                reapplyEditorStyles();
+                saveCurrentDiary();
+            });
+            
+            elements.fontSize.addEventListener('change', () => {
+                reapplyEditorStyles();
+                updateLineHeightPixelValue();
+                saveCurrentDiary();
+            });
+            
+            elements.lineHeight.addEventListener('change', () => {
+                const lineHeight = elements.lineHeight.value;
+                elements.diaryEditor.style.lineHeight = lineHeight;
+                document.documentElement.style.setProperty('--line-height', lineHeight);
+                updateLineHeightPixelValue();
+                saveCurrentDiary();
+            });
+            
+            elements.boldBtn.addEventListener('click', () => {
+                applyFormat('bold');
+                updateFormatButtonState();
+                saveCurrentDiary();
+            });
+            
+            elements.italicBtn.addEventListener('click', () => {
+                applyFormat('italic');
+                updateFormatButtonState();
+                saveCurrentDiary();
+            });
+            
+            elements.underlineBtn.addEventListener('click', () => {
+                applyFormat('underline');
+                updateFormatButtonState();
+                saveCurrentDiary();
+            });
+            
+            // 首行缩进按钮事件
+            elements.indentFirstLineBtn.addEventListener('click', () => {
+                applyFirstLineIndent();
+                elements.indentFirstLineBtn.classList.add('active');
+                saveCurrentDiary();
+                
+                // 1秒后取消激活状态
+                setTimeout(() => {
+                    elements.indentFirstLineBtn.classList.remove('active');
+                }, 1000);
+            });
+            
+            elements.textColorBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                elements.diaryEditor.focus();
+                saveSelection();
+                
+                const rect = elements.textColorBtn.getBoundingClientRect();
+                elements.textColorPicker.style.top = `${rect.bottom + window.scrollY + 5}px`;
+                elements.textColorPicker.style.left = `${rect.left + window.scrollX}px`;
+                elements.textColorPicker.style.display = elements.textColorPicker.style.display === 'block' ? 'none' : 'block';
+                
+                elements.underlineColorPicker.style.display = 'none';
+                elements.tagSettingsDropdown.classList.remove('active');
+            });
+            
+            elements.underlineColorBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                elements.diaryEditor.focus();
+                saveSelection();
+                
+                const rect = elements.underlineColorBtn.getBoundingClientRect();
+                elements.underlineColorPicker.style.top = `${rect.bottom + window.scrollY + 5}px`;
+                elements.underlineColorPicker.style.left = `${rect.left + window.scrollX}px`;
+                elements.underlineColorPicker.style.display = elements.underlineColorPicker.style.display === 'block' ? 'none' : 'block';
+                
+                elements.textColorPicker.style.display = 'none';
+                elements.tagSettingsDropdown.classList.remove('active');
+            });
+            
+            elements.tagColorPreview.addEventListener('click', (e) => {
+                e.stopPropagation();
+                elements.tagColorPicker.style.display = elements.tagColorPicker.style.display === 'grid' ? 'none' : 'grid';
+                
+                elements.textColorPicker.style.display = 'none';
+                elements.underlineColorPicker.style.display = 'none';
+            });
+            
+            elements.tagSizeSlider.addEventListener('input', () => {
+                currentTagSize = parseInt(elements.tagSizeSlider.value);
+                elements.tagSizeValue.textContent = `${currentTagSize}px`;
+                localStorage.setItem('tagSize', currentTagSize);
+                
+                updateSelectedTags();
+            });
+            
+            elements.underlineOffset.addEventListener('change', () => {
+                const offset = elements.underlineOffset.value;
+                document.documentElement.style.setProperty('--underline-offset', `${offset}px`);
+                saveCurrentDiary();
+            });
+            
+            elements.underlineStyle.addEventListener('change', () => {
+                const style = elements.underlineStyle.value;
+                document.documentElement.style.setProperty('--underline-style', style);
+                saveCurrentDiary();
+            });
+            
+            elements.indentIncreaseBtn.addEventListener('click', () => {
+                applyIndent('indent');
+                saveCurrentDiary();
+            });
+            
+            elements.indentDecreaseBtn.addEventListener('click', () => {
+                applyIndent('outdent');
+                saveCurrentDiary();
+            });
+            
+            elements.insertImageBtn.addEventListener('click', () => {
+                elements.imageInput.click();
+            });
+            
+            elements.imageInput.addEventListener('change', handleImageUpload);
+            
+            elements.backgroundSelect.addEventListener('change', () => {
+                document.querySelector('.editor-container').style.backgroundColor = elements.backgroundSelect.value;
+                saveCurrentDiary();
+            });
+            
+            elements.weatherBtn.addEventListener('click', () => {
+                elements.weatherPicker.style.display = elements.weatherPicker.style.display === 'grid' ? 'none' : 'grid';
+                elements.tagSettingsDropdown.classList.remove('active');
+            });
+            
+            elements.emojiBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                elements.diaryEditor.focus();
+                saveSelection();
+                const rect = elements.emojiBtn.getBoundingClientRect();
+                elements.emojiPicker.style.top = `${rect.bottom + window.scrollY + 5}px`;
+                elements.emojiPicker.style.left = `${rect.left + window.scrollX}px`;
+                elements.emojiPicker.style.display = elements.emojiPicker.style.display === 'grid' ? 'none' : 'grid';
+                elements.tagSettingsDropdown.classList.remove('active');
+            });
+            
+            elements.addTagBtn.addEventListener('click', addTag);
+            elements.tagInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    addTag();
+                }
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!elements.weatherBtn.contains(e.target) && !elements.weatherPicker.contains(e.target)) {
+                    elements.weatherPicker.style.display = 'none';
+                }
+                
+                if (!elements.emojiBtn.contains(e.target) && !elements.emojiPicker.contains(e.target)) {
+                    elements.emojiPicker.style.display = 'none';
+                }
+                
+                if (!elements.textColorBtn.contains(e.target) && !elements.textColorPicker.contains(e.target)) {
+                    elements.textColorPicker.style.display = 'none';
+                }
+                
+                if (!elements.underlineColorBtn.contains(e.target) && !elements.underlineColorPicker.contains(e.target)) {
+                    elements.underlineColorPicker.style.display = 'none';
+                }
+                
+                if (!e.target.closest('.tag-container') && !e.target.closest('.tag-settings-group')) {
+                    clearTagSelection();
+                }
+            });
+            
+            // 修复字数统计问题
+            elements.diaryEditor.addEventListener('input', () => {
+                if (autoSaveEnabled) {
+                    debounce(saveCurrentDiary, 1000)();
+                }
+                updateWordCount();
+                
+                // 修复：在输入时重新应用字体样式，确保换行后新段落继承正确字体
+                reapplyEditorStyles();
+            });
+            
+            // 确保在加载和保存时也更新字数统计
+            elements.diaryEditor.addEventListener('DOMSubtreeModified', () => {
+                updateWordCount();
+            });
+            
+            elements.diaryEditor.addEventListener('mouseup', () => {
+                saveSelection();
+                updateFormatButtonState();
+            });
+            elements.diaryEditor.addEventListener('keyup', () => {
+                saveSelection();
+                updateFormatButtonState();
+            });
+        }
+        
+        // 进入全屏浏览模式
+        function enterFullscreenView() {
+            if (!currentDiaryId) return;
+            
+            const diary = diaries.find(d => d.id === currentDiaryId);
+            if (!diary) return;
+            
+            // 更新全屏视图内容
+            elements.fullscreenTitle.textContent = diary.displayDate || formatDate(diary.date);
+            
+            // 修改：在全屏浏览模式下，将"天气："这几个字设置为楷体
+            if (diary.weather) {
+                elements.fullscreenWeather.innerHTML = `<span style="font-family: 'KaiTi', serif;">天气：</span>${diary.weather}`;
+            } else {
+                elements.fullscreenWeather.innerHTML = '';
+            }
+            
+            // 更新标签
+            elements.fullscreenTags.innerHTML = '';
+            let tagTexts = [];
+            if (diary.tags && diary.tags.length > 0) {
+                if (typeof diary.tags[0] === 'string') {
+                    tagTexts = diary.tags;
+                } else {
+                    tagTexts = diary.tags.map(tag => tag.text);
+                }
+                
+                tagTexts.forEach(tag => {
+                    const tagElement = document.createElement('div');
+                    tagElement.className = 'fullscreen-tag';
+                    tagElement.textContent = tag;
+                    elements.fullscreenTags.appendChild(tagElement);
+                });
+            }
+            
+            // 更新内容，保持编辑时的样式
+            elements.fullscreenContent.innerHTML = diary.content;
+            
+            // 应用编辑时的字体样式
+            elements.fullscreenContent.style.fontFamily = diary.fontFamily || 'Arial, sans-serif';
+            elements.fullscreenContent.style.fontSize = diary.fontSize || '18px';
+            elements.fullscreenContent.style.lineHeight = diary.lineHeight || '1.6';
+            
+            // 应用首行缩进
+            if (diary.firstLineIndent) {
+                elements.fullscreenContent.style.textIndent = '2em';
+                const paragraphs = elements.fullscreenContent.querySelectorAll('p, div');
+                paragraphs.forEach(p => {
+                    p.style.textIndent = '2em';
+                });
+            } else {
+                elements.fullscreenContent.style.textIndent = '';
+                const paragraphs = elements.fullscreenContent.querySelectorAll('p, div');
+                paragraphs.forEach(p => {
+                    p.style.textIndent = '';
+                });
+            }
+            
+            // 显示全屏视图
+            elements.fullscreenView.classList.add('active');
+            
+            // 隐藏工具栏和侧边栏
+            document.querySelector('.toolbar').style.display = 'none';
+            elements.sidebar.style.display = 'none';
+            document.querySelector('.main-content').style.borderRadius = 'var(--border-radius)';
+        }
+        
+        // 退出全屏浏览模式
+        function exitFullscreenView() {
+            elements.fullscreenView.classList.remove('active');
+            
+            // 显示工具栏和侧边栏
+            document.querySelector('.toolbar').style.display = 'flex';
+            elements.sidebar.style.display = 'flex';
+            document.querySelector('.main-content').style.borderRadius = '0 var(--border-radius) var(--border-radius) 0';
+        }
+        
+        // 首行缩进功能
+        function applyFirstLineIndent() {
+            // 切换状态
+            firstLineIndentEnabled = !firstLineIndentEnabled;
+            
+            // 应用或取消首行缩进
+            elements.editorContainer.classList.toggle('first-line-indent', firstLineIndentEnabled);
+            
+            // 确保所有段落都应用缩进
+            if (firstLineIndentEnabled) {
+                // 确保编辑器根元素也应用缩进
+                elements.diaryEditor.style.textIndent = '2em';
+                
+                // 确保所有现有段落都应用缩进
+                const paragraphs = elements.diaryEditor.querySelectorAll('p, div');
+                paragraphs.forEach(p => {
+                    p.style.textIndent = '2em';
+                });
+            } else {
+                // 取消缩进
+                elements.diaryEditor.style.textIndent = '';
+                
+                // 取消所有段落的缩进
+                const paragraphs = elements.diaryEditor.querySelectorAll('p, div');
+                paragraphs.forEach(p => {
+                    p.style.textIndent = '';
+                });
+            }
+            
+            // 保存设置
+            localStorage.setItem('firstLineIndentEnabled', firstLineIndentEnabled);
+            
+            saveCurrentDiary();
+        }
+        
+        // 重新应用编辑器样式
+        function reapplyEditorStyles() {
+            const fontFamily = elements.fontFamily.value;
+            const fontSize = elements.fontSize.value;
+            
+            // 设置编辑器根元素的样式
+            elements.diaryEditor.style.fontFamily = fontFamily;
+            elements.diaryEditor.style.fontSize = fontSize;
+            document.documentElement.style.setProperty('--current-font-family', fontFamily);
+            
+            // 获取编辑器中的所有元素
+            const allElements = elements.diaryEditor.querySelectorAll('*');
+            
+            // 遍历所有元素并应用样式
+            allElements.forEach(el => {
+                // 确保所有段落和div元素继承正确的字体
+                if (el.tagName === 'P' || el.tagName === 'DIV' || el.tagName === 'SPAN') {
+                    el.style.fontFamily = fontFamily;
+                    el.style.fontSize = fontSize;
+                }
+                
+                // 确保其他内联元素也继承字体
+                if (!el.style.fontFamily || el.style.fontFamily === 'inherit') {
+                    el.style.fontFamily = fontFamily;
+                }
+                if (!el.style.fontSize || el.style.fontSize === 'inherit') {
+                    el.style.fontSize = fontSize;
+                }
+            });
+        }
+        
+        // 应用文字颜色
+        function applyTextColor(color) {
+            currentTextColor = color;
+            elements.diaryEditor.focus();
+            restoreSelection();
+            
+            const fontFamily = elements.fontFamily.value;
+            const fontSize = elements.fontSize.value;
+            
+            document.execCommand('foreColor', false, color);
+            
+            const selection = window.getSelection();
+            if (!selection.isCollapsed) {
+                const parentElement = selection.getRangeAt(0).commonAncestorContainer;
+                const elementsToUpdate = parentElement.nodeType === 1 
+                    ? [parentElement] 
+                    : [parentElement.parentElement];
+                
+                elementsToUpdate.forEach(el => {
+                    el.style.fontFamily = fontFamily;
+                    el.style.fontSize = fontSize;
+                });
+            }
+            
+            saveCurrentDiary();
+        }
+        
+        // 应用下划线颜色
+        function applyUnderlineColor(color) {
+            currentUnderlineColor = color;
+            document.documentElement.style.setProperty('--underline-color', color);
+            
+            const underlinedElements = elements.diaryEditor.querySelectorAll('u');
+            underlinedElements.forEach(el => {
+                el.style.textDecorationColor = color;
+            });
+            
+            saveCurrentDiary();
+        }
+        
+        // 应用格式并保持字体样式
+        function applyFormat(command) {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const fontFamily = elements.fontFamily.value;
+                const fontSize = elements.fontSize.value;
+                
+                document.execCommand(command, false, null);
+                
+                if (!selection.isCollapsed) {
+                    const parentElement = selection.getRangeAt(0).commonAncestorContainer;
+                    const elementsToUpdate = parentElement.nodeType === 1 
+                        ? [parentElement] 
+                        : [parentElement.parentElement];
+                    
+                    elementsToUpdate.forEach(el => {
+                        el.style.fontFamily = fontFamily;
+                        el.style.fontSize = fontSize;
+                    });
+                }
+            }
+        }
+        
+        // 应用缩进
+        function applyIndent(command) {
+            elements.diaryEditor.focus();
+            
+            const fontFamily = elements.fontFamily.value;
+            const fontSize = elements.fontSize.value;
+            
+            document.execCommand(command, false, null);
+            
+            reapplyEditorStyles();
+            
+            elements.diaryEditor.focus();
+        }
+        
+        // 更新格式按钮状态
+        function updateFormatButtonState() {
+            const isBold = document.queryCommandState('bold');
+            const isItalic = document.queryCommandState('italic');
+            const isUnderline = document.queryCommandState('underline');
+            
+            elements.boldBtn.classList.toggle('active', isBold);
+            elements.italicBtn.classList.toggle('active', isItalic);
+            elements.underlineBtn.classList.toggle('active', isUnderline);
+        }
+        
+        // 保存当前选区状态
+        let savedRange = null;
+        function saveSelection() {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                savedRange = selection.getRangeAt(0).cloneRange();
+            }
+        }
+        
+        // 恢复选区状态
+        function restoreSelection() {
+            if (savedRange) {
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(savedRange);
+            }
+        }
+        
+        // 填充表情选择器
+        function populateEmojiPicker() {
+            elements.emojiPicker.innerHTML = '';
+            emojis.forEach(emoji => {
+                const emojiElement = document.createElement('div');
+                emojiElement.className = 'emoji-option';
+                emojiElement.textContent = emoji;
+                emojiElement.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    elements.diaryEditor.focus();
+                    restoreSelection();
+                    insertEmojiAtCursor(emoji);
+                    elements.emojiPicker.style.display = 'none';
+                });
+                elements.emojiPicker.appendChild(emojiElement);
+            });
+            elements.emojiPicker.style.display = 'none';
+        }
+        
+        // 填充天气选择器
+        function populateWeatherPicker() {
+            elements.weatherPicker.style.display = 'grid';
+            weatherOptions.forEach(weather => {
+                const weatherElement = document.createElement('div');
+                weatherElement.className = 'weather-option';
+                weatherElement.innerHTML = `
+                    <div>${weather.emoji}</div>
+                    <div class="weather-text">${weather.text}</div>
+                `;
+                weatherElement.addEventListener('click', () => {
+                    currentWeather = weather.emoji;
+                    elements.weatherBtn.textContent = `天气 ${currentWeather}`;
+                    elements.weatherPicker.style.display = 'none';
+                    saveCurrentDiary();
+                });
+                elements.weatherPicker.appendChild(weatherElement);
+            });
+            elements.weatherPicker.style.display = 'none';
+        }
+        
+        // 更新字数统计
+        function updateWordCount() {
+            const text = extractTextFromHTML(elements.diaryEditor.innerHTML);
+            // 修复：使用更准确的字数统计方法
+            const wordCount = text.replace(/\s+/g, '').length;
+            elements.wordCountElement.textContent = wordCount;
+        }
+        
+        // 在光标位置插入表情
+        function insertEmojiAtCursor(emoji) {
+            elements.diaryEditor.focus();
+            
+            const selection = window.getSelection();
+            
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                range.deleteContents();
+                
+                const textNode = document.createTextNode(emoji);
+                range.insertNode(textNode);
+                
+                range.setStartAfter(textNode);
+                range.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(range);
+                selection.removeAllRanges();
+                selection.addRange(range);
+                saveSelection();
+            } else {
+                if (elements.diaryEditor.innerText.trim() === '') {
+                    elements.diaryEditor.innerText = emoji;
+                    setCursorToEnd(elements.diaryEditor);
+                } else {
+                    document.execCommand('insertText', false, emoji);
+                }
+            }
+            
+            const inputEvent = new Event('input', { bubbles: true });
+            elements.diaryEditor.dispatchEvent(inputEvent);
+        }
+        
+        // 将光标设置到编辑器末尾
+        function setCursorToEnd(element) {
+            const range = document.createRange();
+            const selection = window.getSelection();
+            
+            range.setStartAfter(element.lastChild);
+            range.collapse(true);
+            
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+        
+        // 处理图片上传
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    img.style.maxWidth = '100%';
+                    img.style.height = 'auto';
+                    img.style.borderRadius = '8px';
+                    img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                    
+                    const sel = window.getSelection();
+                    if (sel.rangeCount) {
+                        const range = sel.getRangeAt(0);
+                        range.deleteContents();
+                        range.insertNode(img);
+                        
+                        const br = document.createElement('br');
+                        range.insertNode(br);
+                    }
+                    
+                    saveCurrentDiary();
+                    updateWordCount();
+                };
+                reader.readAsDataURL(file);
+            }
+            elements.imageInput.value = '';
+        }
+        
+        // 添加标签
+        function addTag() {
+            const tagText = elements.tagInput.value.trim();
+            if (tagText) {
+                const existingTag = currentTags.find(tag => tag.text === tagText);
+                if (!existingTag) {
+                    const newTag = {
+                        text: tagText,
+                        color: currentTagColor,
+                        fontSize: currentTagSize
+                    };
+                    currentTags.push(newTag);
+                    renderTags();
+                    elements.tagInput.value = '';
+                    saveCurrentDiary();
+                }
+            }
+        }
+        
+        // 渲染标签
+        function renderTags() {
+            elements.tagContainer.innerHTML = '';
+            currentTags.forEach((tag, index) => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag';
+                tagElement.textContent = tag.text;
+                tagElement.style.backgroundColor = tag.color;
+                tagElement.style.fontSize = `${tag.fontSize}px`;
+                tagElement.dataset.index = index;
+                
+                if (selectedTags.includes(index)) {
+                    tagElement.classList.add('selected');
+                }
+                
+                tagElement.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const tagIndex = parseInt(tagElement.dataset.index);
+                    
+                    if (e.ctrlKey || e.metaKey) {
+                        if (selectedTags.includes(tagIndex)) {
+                            selectedTags = selectedTags.filter(i => i !== tagIndex);
+                        } else {
+                            selectedTags.push(tagIndex);
+                        }
+                    } else {
+                        selectedTags = [tagIndex];
+                    }
+                    
+                    renderTags();
+                });
+                
+                const removeTag = document.createElement('span');
+                removeTag.className = 'remove-tag';
+                removeTag.textContent = '×';
+                removeTag.title = '删除标签';
+                
+                removeTag.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const tagIndex = parseInt(tagElement.dataset.index);
+                    currentTags.splice(tagIndex, 1);
+                    
+                    selectedTags = selectedTags.filter(i => i !== tagIndex);
+                    
+                    renderTags();
+                    saveCurrentDiary();
+                });
+                
+                tagElement.appendChild(removeTag);
+                elements.tagContainer.appendChild(tagElement);
+            });
+        }
+        
+        // 更新选中的标签
+        function updateSelectedTags() {
+            if (selectedTags.length > 0) {
+                selectedTags.forEach(index => {
+                    if (currentTags[index]) {
+                        currentTags[index].color = currentTagColor;
+                        currentTags[index].fontSize = currentTagSize;
+                    }
+                });
+                renderTags();
+                saveCurrentDiary();
+            }
+        }
+        
+        // 清除所有标签选中
+        function clearTagSelection() {
+            selectedTags = [];
+            renderTags();
+        }
+        
+        // 创建新日记
+        function createNewDiary() {
+            const today = new Date();
+            const formattedDate = formatDateForDisplay(today);
+            
+            const newDiary = {
+                id: Date.now().toString(),
+                date: today.toISOString().split('T')[0],
+                displayDate: formattedDate,
+                content: '',
+                weather: '',
+                tags: [],
+                fontFamily: elements.fontFamily.value,
+                fontSize: elements.fontSize.value,
+                lineHeight: elements.lineHeight.value,
+                backgroundColor: elements.backgroundSelect.value,
+                underlineOffset: elements.underlineOffset.value,
+                underlineStyle: elements.underlineStyle.value,
+                underlineColor: '#333333',
+                textColor: '#333333',
+                globalUnderline: globalUnderlineEnabled,
+                firstLineIndent: firstLineIndentEnabled,
+                theme: currentTheme
+            };
+            
+            diaries.unshift(newDiary);
+            saveDiaries();
+            renderDiaryList();
+            loadDiary(newDiary.id);
+        }
+        
+        // 加载日记
+        function loadDiary(id) {
+            const diary = diaries.find(d => d.id === id);
+            if (diary) {
+                currentDiaryId = id;
+                
+                document.querySelectorAll('.diary-item').forEach(item => {
+                    item.classList.remove('active');
+                    if (item.dataset.id === id) {
+                        item.classList.add('active');
+                    }
+                });
+                
+                elements.diaryEditor.innerHTML = diary.content;
+                
+                elements.fontFamily.value = diary.fontFamily || 'Arial, sans-serif';
+                elements.fontSize.value = diary.fontSize || '16px';
+                elements.lineHeight.value = diary.lineHeight || '1.5';
+                elements.backgroundSelect.value = diary.backgroundColor || '#ffffff';
+                
+                reapplyEditorStyles();
+                elements.diaryEditor.style.lineHeight = elements.lineHeight.value;
+                document.documentElement.style.setProperty('--line-height', elements.lineHeight.value);
+                
+                updateLineHeightPixelValue();
+                
+                elements.underlineOffset.value = diary.underlineOffset || 4;
+                elements.underlineStyle.value = diary.underlineStyle || 'solid';
+                
+                document.documentElement.style.setProperty('--underline-offset', `${elements.underlineOffset.value}px`);
+                document.documentElement.style.setProperty('--underline-style', elements.underlineStyle.value);
+                
+                currentUnderlineColor = diary.underlineColor || '#333333';
+                currentTextColor = diary.textColor || '#333333';
+                document.documentElement.style.setProperty('--underline-color', currentUnderlineColor);
+                
+                document.querySelector('.editor-container').style.backgroundColor = elements.backgroundSelect.value;
+                
+                globalUnderlineEnabled = diary.globalUnderline || false;
+                elements.editorContainer.classList.toggle('global-underline', globalUnderlineEnabled);
+                
+                firstLineIndentEnabled = diary.firstLineIndent || false;
+                elements.editorContainer.classList.toggle('first-line-indent', firstLineIndentEnabled);
+                
+                // 确保所有段落都应用缩进
+                if (firstLineIndentEnabled) {
+                    elements.diaryEditor.style.textIndent = '2em';
+                    const paragraphs = elements.diaryEditor.querySelectorAll('p, div');
+                    paragraphs.forEach(p => {
+                        p.style.textIndent = '2em';
+                    });
+                } else {
+                    elements.diaryEditor.style.textIndent = '';
+                    const paragraphs = elements.diaryEditor.querySelectorAll('p, div');
+                    paragraphs.forEach(p => {
+                        p.style.textIndent = '';
+                    });
+                }
+                
+                currentWeather = diary.weather || '';
+                
+                if (diary.tags && diary.tags.length > 0 && typeof diary.tags[0] === 'string') {
+                    currentTags = diary.tags.map(tagText => ({
+                        text: tagText,
+                        color: tagColors[Math.floor(Math.random() * tagColors.length)],
+                        fontSize: 16
+                    }));
+                    diary.tags = currentTags;
+                    saveDiaries();
+                } else {
+                    currentTags = diary.tags || [];
+                }
+                
+                elements.weatherBtn.textContent = currentWeather ? `天气 ${currentWeather}` : '天气 ☀️';
+                
+                selectedTags = [];
+                renderTags();
+                
+                updateWordCount();
+                updateFormatButtonState();
+                
+                savedRange = null;
+            }
+        }
+        
+        // 保存当前日记
+        function saveCurrentDiary() {
+            if (!currentDiaryId) return;
+            
+            const diaryIndex = diaries.findIndex(d => d.id === currentDiaryId);
+            if (diaryIndex !== -1) {
+                diaries[diaryIndex].content = elements.diaryEditor.innerHTML;
+                diaries[diaryIndex].fontFamily = elements.fontFamily.value;
+                diaries[diaryIndex].fontSize = elements.fontSize.value;
+                diaries[diaryIndex].lineHeight = elements.lineHeight.value;
+                diaries[diaryIndex].backgroundColor = elements.backgroundSelect.value;
+                diaries[diaryIndex].weather = currentWeather;
+                diaries[diaryIndex].tags = currentTags;
+                diaries[diaryIndex].lastModified = new Date().toISOString();
+                
+                diaries[diaryIndex].underlineOffset = elements.underlineOffset.value;
+                diaries[diaryIndex].underlineStyle = elements.underlineStyle.value;
+                diaries[diaryIndex].underlineColor = currentUnderlineColor;
+                diaries[diaryIndex].textColor = currentTextColor;
+                
+                diaries[diaryIndex].globalUnderline = globalUnderlineEnabled;
+                diaries[diaryIndex].firstLineIndent = firstLineIndentEnabled;
+                
+                diaries[diaryIndex].theme = currentTheme;
+                
+                saveDiaries();
+                renderDiaryList();
+                
+                if (!autoSaveEnabled) {
+                    showNotification('日记已保存');
+                }
+            }
+        }
+        
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.right = '20px';
+            notification.style.backgroundColor = '#4CAF50';
+            notification.style.color = 'white';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = 'var(--border-radius)';
+            notification.style.boxShadow = 'var(--shadow)';
+            notification.style.zIndex = '1000';
+            notification.style.transition = 'var(--transition)';
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(10px)';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateY(0)';
+            }, 10);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 2000);
+        }
+        
+        // 备份数据
+        function backupData() {
+            try {
+                const backupData = {
+                    diaries: diaries,
+                    backupDate: new Date().toISOString()
+                };
+                
+                const dataStr = JSON.stringify(backupData, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                saveAs(blob, `diary-backup-${new Date().toISOString().split('T')[0]}.json`);
+                
+                showNotification('数据备份成功！');
+            } catch (error) {
+                console.error('备份失败:', error);
+                showNotification('备份失败: ' + error.message);
+            }
+        }
+        
+        // 恢复数据
+        function restoreData(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const backupData = JSON.parse(event.target.result);
+                    
+                    if (backupData.diaries && Array.isArray(backupData.diaries)) {
+                        if (confirm('确定要恢复备份数据吗？当前数据将被覆盖。')) {
+                            diaries = backupData.diaries;
+                            saveDiaries();
+                            renderDiaryList();
+                            
+                            if (diaries.length > 0) {
+                                loadDiary(diaries[0].id);
+                            } else {
+                                createNewDiary();
+                            }
+                            
+                            showNotification('数据恢复成功！');
+                            elements.settingsModal.classList.remove('active');
+                        }
+                    } else {
+                        showNotification('备份文件格式错误！');
+                    }
+                } catch (error) {
+                    console.error('恢复失败:', error);
+                    showNotification('恢复失败: ' + error.message);
+                }
+            };
+            reader.onerror = function() {
+                showNotification('读取文件时出错');
+            };
+            reader.readAsText(file);
+            
+            elements.backupFileInput.value = '';
+        }
+        
+        // 删除日记
+        function deleteDiary(id) {
+            if (confirm('确定要删除这篇日记吗？此操作不可撤销。')) {
+                diaries = diaries.filter(d => d.id !== id);
+                saveDiaries();
+                renderDiaryList();
+                
+                if (diaries.length > 0) {
+                    loadDiary(diaries[0].id);
+                } else {
+                    createNewDiary();
+                }
+            }
+        }
+        
+        // 渲染日记列表
+        function renderDiaryList() {
+            elements.diaryList.innerHTML = '';
+            
+            diaries.forEach(diary => {
+                const diaryElement = document.createElement('div');
+                diaryElement.className = 'diary-item';
+                if (diary.id === currentDiaryId) {
+                    diaryElement.classList.add('active');
+                }
+                diaryElement.dataset.id = diary.id;
+                
+                const diaryHeader = document.createElement('div');
+                diaryHeader.className = 'diary-header';
+                
+                const dateElement = document.createElement('div');
+                dateElement.className = 'diary-date';
+                dateElement.textContent = diary.displayDate || formatDate(diary.date);
+                
+                dateElement.addEventListener('dblclick', () => {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'diary-date-input';
+                    input.value = dateElement.textContent;
+                    
+                    dateElement.replaceWith(input);
+                    input.focus();
+                    
+                    const saveDate = () => {
+                        const newDate = input.value.trim();
+                        if (newDate) {
+                            diary.displayDate = newDate;
+                            saveDiaries();
+                            renderDiaryList();
+                        }
+                    };
+                    
+                    input.addEventListener('blur', saveDate);
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            saveDate();
+                        }
+                    });
+                });
+                
+                const weatherElement = document.createElement('div');
+                weatherElement.className = 'diary-weather';
+                weatherElement.textContent = diary.weather || '';
+                
+                diaryHeader.appendChild(dateElement);
+                diaryHeader.appendChild(weatherElement);
+                
+                const tagsElement = document.createElement('div');
+                tagsElement.className = 'diary-tags';
+                
+                let tagsToRender = [];
+                if (diary.tags && diary.tags.length > 0) {
+                    if (typeof diary.tags[0] === 'string') {
+                        tagsToRender = diary.tags;
+                    } else {
+                        tagsToRender = diary.tags.map(tag => tag.text);
+                    }
+                }
+                
+                tagsToRender.forEach(tag => {
+                    const tagElement = document.createElement('div');
+                    tagElement.className = 'tag';
+                    tagElement.textContent = tag;
+                    tagsElement.appendChild(tagElement);
+                });
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.innerHTML = '×';
+                
+                diaryElement.appendChild(diaryHeader);
+                diaryElement.appendChild(tagsElement);
+                diaryElement.appendChild(deleteBtn);
+                
+                elements.diaryList.appendChild(diaryElement);
+            });
+        }
+        
+        // 筛选日记
+        function filterDiaries() {
+            const searchTerm = elements.searchInput.value.toLowerCase();
+            
+            document.querySelectorAll('.diary-item').forEach(item => {
+                const diaryId = item.dataset.id;
+                const diary = diaries.find(d => d.id === diaryId);
+                if (!diary) return;
+                
+                let shouldShow = true;
+                
+                if (searchTerm) {
+                    const contentMatch = extractTextFromHTML(diary.content).toLowerCase().includes(searchTerm);
+                    
+                    let tagMatch = false;
+                    if (diary.tags && diary.tags.length > 0) {
+                        if (typeof diary.tags[0] === 'string') {
+                            tagMatch = diary.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                        } else {
+                            tagMatch = diary.tags.some(tag => tag.text.toLowerCase().includes(searchTerm));
+                        }
+                    }
+                    
+                    const dateMatch = (diary.displayDate || formatDate(diary.date)).toLowerCase().includes(searchTerm);
+                    
+                    shouldShow = contentMatch || tagMatch || dateMatch;
+                }
+                
+                item.style.display = shouldShow ? 'block' : 'none';
+            });
+        }
+        
+        // 格式化日期显示
+        function formatDateForDisplay(date) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            return date.toLocaleDateString('zh-CN', options);
+        }
+        
+        // 格式化日期
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('zh-CN', options);
+        }
+        
+        // 生成导出文件名
+        function generateExportFileName(diary) {
+            const displayDate = diary.displayDate || formatDate(diary.date);
+            const cleanDate = displayDate.replace(/[/\\?%*:|"<>]/g, '-');
+            
+            let tagTexts = [];
+            if (diary.tags && diary.tags.length > 0) {
+                if (typeof diary.tags[0] === 'string') {
+                    tagTexts = diary.tags;
+                } else {
+                    tagTexts = diary.tags.map(tag => tag.text);
+                }
+            }
+            
+            const tagPart = tagTexts.length > 0 ? `-${tagTexts.join('-')}` : '';
+            
+            return `日记-${cleanDate}${tagPart}`;
+        }
+        
+        // 保存所有日记到本地存储
+        function saveDiaries() {
+            localStorage.setItem('diaries', JSON.stringify(diaries));
+        }
+        
+        // 防抖函数
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        // 导出为Word
+        function exportToWord() {
+            if (!currentDiaryId) return;
+            
+            const diary = diaries.find(d => d.id === currentDiaryId);
+            if (!diary) return;
+            
+            let content = diary.content;
+            
+            let tagTexts = [];
+            if (diary.tags && diary.tags.length > 0) {
+                if (typeof diary.tags[0] === 'string') {
+                    tagTexts = diary.tags;
+                } else {
+                    tagTexts = diary.tags.map(tag => tag.text);
+                }
+            }
+            
+            const fullContent = `
+            <html xmlns:o="urn:schemas-microsoft-com:office:office" 
+                  xmlns:w="urn:schemas-microsoft-com:office:word" 
+                  xmlns="http://www.w3.org/TR/REC-html40">
+            <head>
+                <meta charset="utf-8">
+                <title>我的日记</title>
+                <style>
+                    body { font-family: ${diary.fontFamily || 'Arial, sans-serif'}; margin: 40px; line-height: ${diary.lineHeight || 1.5}; }
+                    .title { font-size: 24px; color: #2c3e50; margin-bottom: 20px; }
+                    .meta { font-size: 14px; color: #666; margin-bottom: 20px; }
+                    .content { 
+                        font-size: ${diary.fontSize || '16px'}; 
+                        line-height: inherit; 
+                        color: ${diary.textColor || '#333333'};
+                        padding-bottom: 20px;
+                        ${diary.firstLineIndent ? 'text-indent: 2em;' : ''}
+                    }
+                    u { 
+                        text-underline-offset: ${diary.underlineOffset || 4}px; 
+                        text-decoration-thickness: 1.5px; 
+                        text-decoration-style: ${diary.underlineStyle || 'solid'};
+                        text-decoration-color: ${diary.underlineColor || '#333333'};
+                    }
+                    b, i, u { font-family: inherit; }
+                    p, div { 
+                        ${diary.firstLineIndent ? 'text-indent: 2em;' : ''}
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="title">我的日记</div>
+                <div class="meta">
+                    <div>日期: ${diary.displayDate || formatDate(diary.date)}</div>
+                    ${diary.weather ? `<div>天气: ${diary.weather}</div>` : ''}
+                    ${tagTexts.length > 0 ? `<div>标签: ${tagTexts.join(', ')}</div>` : ''}
+                </div>
+                <div class="content">${content}</div>
+            </body>
+            </html>
+            `;
+            
+            const blob = new Blob([fullContent], { type: 'application/msword' });
+            const fileName = generateExportFileName(diary);
+            saveAs(blob, `${fileName}.doc`);
+        }
+        
+        // 导出为TXT
+        function exportToTXT() {
+            if (!currentDiaryId) return;
+            
+            const diary = diaries.find(d => d.id === currentDiaryId);
+            if (!diary) return;
+            
+            let tagTexts = [];
+            if (diary.tags && diary.tags.length > 0) {
+                if (typeof diary.tags[0] === 'string') {
+                    tagTexts = diary.tags;
+                } else {
+                    tagTexts = diary.tags.map(tag => tag.text);
+                }
+            }
+            
+            let txtContent = `我的日记\n`;
+            txtContent += `日期: ${diary.displayDate || formatDate(diary.date)}\n`;
+            
+            if (diary.weather) {
+                txtContent += `天气: ${diary.weather}\n`;
+            }
+            
+            if (tagTexts.length > 0) {
+                txtContent += `标签: ${tagTexts.join(', ')}\n`;
+            }
+            
+            txtContent += '\n';
+            txtContent += extractTextFromHTML(diary.content);
+            
+            const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+            const fileName = generateExportFileName(diary);
+            saveAs(blob, `${fileName}.txt`);
+        }
+        
+        // 从HTML提取纯文本
+        function extractTextFromHTML(html) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            const images = tempDiv.getElementsByTagName('img');
+            for (let i = 0; i < images.length; i++) {
+                images[i].replaceWith('[图片]');
+            }
+            
+            return tempDiv.textContent || tempDiv.innerText || '';
+        }
+        
+        // 启动应用
+        initApp();
+    </script>
+<script>
+/* --- JS helper: 将标签设置面板移动到 body 层并智能定位 --- */
+(function() {
+    function moveDropdownToBody(dropdown, toggleBtn) {
+        if (!dropdown || !toggleBtn) return;
+        // mark as moved
+        dropdown.classList.add('moved-to-body');
+        // ensure it's a child of body
+        if (dropdown.parentElement !== document.body) {
+            document.body.appendChild(dropdown);
+        }
+        // compute position: prefer below, but if insufficient space, show above
+        const rect = toggleBtn.getBoundingClientRect();
+        const ddRect = dropdown.getBoundingClientRect();
+        const margin = 8;
+        // default top below button
+        let top = rect.bottom + margin + window.scrollY;
+        let left = rect.left + window.scrollX;
+        // adjust left to keep within viewport
+        if (left + ddRect.width > window.scrollX + window.innerWidth - 12) {
+            left = window.scrollX + window.innerWidth - ddRect.width - 12;
+            if (left < 12) left = 12;
+        }
+        // if not enough space below, show above
+        const spaceBelow = window.innerHeight - rect.bottom - margin;
+        if (spaceBelow < ddRect.height && rect.top > ddRect.height + margin) {
+            top = rect.top - ddRect.height - margin + window.scrollY;
+        }
+        dropdown.style.left = left + 'px';
+        dropdown.style.top = top + 'px';
+        dropdown.style.display = 'block';
+        dropdown.style.zIndex = 3000;
+    }
+
+    function restoreDropdown(dropdown, originalParent) {
+        if (!dropdown) return;
+        dropdown.style.display = 'none';
+        dropdown.style.left = '';
+        dropdown.style.top = '';
+        dropdown.style.zIndex = '';
+        if (originalParent && originalParent.appendChild) {
+            originalParent.appendChild(dropdown);
+        }
+        dropdown.classList.remove('moved-to-body');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggle = document.getElementById('tag-settings-toggle');
+        const dropdown = document.getElementById('tag-settings-dropdown');
+        if (!toggle || !dropdown) return;
+        const originalParent = dropdown.parentElement;
+        let open = false;
+
+        toggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            // toggle behavior
+            if (!open) {
+                moveDropdownToBody(dropdown, toggle);
+                open = true;
+                // close when clicking elsewhere
+                setTimeout(() => {
+                    document.addEventListener('click', documentClickHandler);
+                    window.addEventListener('resize', windowResizeHandler);
+                    window.addEventListener('scroll', windowScrollHandler, true);
+                }, 0);
+            } else {
+                restoreDropdown(dropdown, originalParent);
+                open = false;
+                document.removeEventListener('click', documentClickHandler);
+                window.removeEventListener('resize', windowResizeHandler);
+                window.removeEventListener('scroll', windowScrollHandler, true);
+            }
+        });
+
+        function documentClickHandler(e) {
+            if (!dropdown.contains(e.target) && e.target !== toggle) {
+                restoreDropdown(dropdown, originalParent);
+                open = false;
+                document.removeEventListener('click', documentClickHandler);
+                window.removeEventListener('resize', windowResizeHandler);
+                window.removeEventListener('scroll', windowScrollHandler, true);
+            }
+        }
+
+        function windowResizeHandler() {
+            if (open) moveDropdownToBody(dropdown, toggle);
+        }
+
+        function windowScrollHandler() {
+            if (open) moveDropdownToBody(dropdown, toggle);
+        }
+    });
+})();
+/* --- end helper --- */
+</script>
+</body>
 </html>
